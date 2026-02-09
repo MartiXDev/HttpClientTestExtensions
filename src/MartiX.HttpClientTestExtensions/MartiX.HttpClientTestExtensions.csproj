@@ -1,0 +1,59 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>net8.0;net10.0</TargetFrameworks>
+    <PackageId>MartiX.HttpClientTestExtensions</PackageId>
+    <Title>MartiX.HttpClientTestExtensions</Title>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <Authors>Steve Smith (@ardalis)</Authors>
+    <Company>Ardalis.com</Company>
+    <PackageProjectUrl>https://github.com/ardalis/HttpClientTestExtensions</PackageProjectUrl>
+    <Description>Helpful extension methods to use when testing APIs in Functional Tests with xUnit.</Description>
+    <Summary>Functional/integration tests using WebApplicationFactory and HttpClient often have a
+      lot of repetition. These extensions minimize the repetition so fetching and deserializing data
+      from endpoints is one line of code per test.</Summary>
+    <RepositoryUrl>https://github.com/ardalis/HttpClientTestExtensions</RepositoryUrl>
+    <PackageTags>aspnet asp.net aspnetcore asp.net core api web api rest endpoint controller test
+      integration functional xunit unit</PackageTags>
+    <PackageReleaseNotes>Adding PATCH verb support by @janskola in #37</PackageReleaseNotes>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <Version>4.2.0</Version>
+    <AssemblyName>MartiX.HttpClientTestExtensions</AssemblyName>
+    <PackageIcon>icon.png</PackageIcon>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <AllowedOutputExtensionsInPackageBuildOutputFolder>
+      $(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
+    <LangVersion>10.0</LangVersion>
+    <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="icon.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="icon.png" Pack="true" Visible="false" PackagePath="" />
+    <None Include="docs\README.md" Pack="true" PackagePath="" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="System.Text.Json" Version="8.0.23"
+      Condition="'$(TargetFramework)' == 'net8.0'" />
+    <PackageReference Include="System.Text.Json" Version="10.0.2"
+      Condition="'$(TargetFramework)' == 'net10.0'" />
+    <PackageReference Include="xunit.abstractions" Version="2.0.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="LICENSE.txt" Pack="true" PackagePath="$(PackageLicenseFile)" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)' == 'net8.0'">
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="8.0.23" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)' == 'net10.0'">
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="10.0.2" />
+  </ItemGroup>
+</Project>

@@ -1,7 +1,3 @@
-[![.NET Build and Test](https://github.com/ardalis/HttpClientTestExtensions/workflows/.NET%20Build%20and%20Test/badge.svg)](https://github.com/ardalis/HttpClientTestExtensions/actions?query=workflow%3A%22.NET+Build+and+Test%22)
-[![Nuget](https://img.shields.io/nuget/v/MartiX.HttpClientTestExtensions)](https://www.nuget.org/packages/MartiX.HttpClientTestExtensions/)
-[![Nuget](https://img.shields.io/nuget/dt/MartiX.HttpClientTestExtensions)](https://www.nuget.org/packages/MartiX.HttpClientTestExtensions/)
-
 # HttpClient Test Extensions
 
 Extensions for testing HTTP endpoints and deserializing the results. Currently works with XUnit.
@@ -86,7 +82,7 @@ public async Task ReturnsNotFoundGivenInvalidAuthorId()
 
 All of these methods are extensions on `HttpClient`; the following samples assume `client` is an `HttpClient`. All methods take an optional `ITestOutputHelper`, which is an xUnit type.
 
-#### [GET](src/MartiX.HttpClientTestExtensions/HttpClientGetExtensionMethods.cs)
+#### [GET](src\MartiX.HttpClientTestExtensions\HttpClientGetExtensionMethods.cs)
 
 ```csharp
 // GET and return an object T
@@ -113,9 +109,12 @@ await client.GetAndEnsureForbiddenAsync("/authors/1");
 
 // GET and assert a 404 is returned
 await client.GetAndEnsureNotFoundAsync("/authors/-1");
+
+// GET and assert a 405 is returned
+await client.GetAndEnsureMethodNotAllowedAsync("/wrongendpoint", content)
 ```
 
-#### [POST](src/MartiX.HttpClientTestExtensions/HttpClientPostExtensionMethods.cs)
+#### [POST](src\MartiX.HttpClientTestExtensions\HttpClientPostExtensionMethods.cs)
 
 ```csharp
 // NOTE: There's a helper for this now, too (see below)
@@ -142,9 +141,12 @@ await client.PostAndEnsureForbiddenAsync("/authors", content);
 
 // POST and assert a 404 is returned
 await client.PostAndEnsureNotFoundAsync("/wrongendpoint", content)
+
+// POST and assert a 405 is returned
+await client.PostAndEnsureMethodNotAllowedAsync("/wrongendpoint", content)
 ```
 
-#### [PUT](src/MartiX.HttpClientTestExtensions/HttpClientPutExtensionMethods.cs)
+#### [PUT](src\MartiX.HttpClientTestExtensions\HttpClientPutExtensionMethods.cs)
 
 ```csharp
 var content = new StringContent(JsonSerializer.Serialize(dto), Encoding.UTF8, "application/json");
@@ -170,34 +172,9 @@ await client.PutAndEnsureForbiddenAsync("/authors/1", content);
 
 // PUT and assert a 404 is returned
 await client.PutAndEnsureNotFoundAsync("/wrongendpoint", content)
-```
 
-#### [PATCH](src\MartiX.HttpClientTestExtensions\HttpClientPatchExtensionMethods.cs)
-
-```csharp
-var content = new StringContent(JsonSerializer.Serialize(dto), Encoding.UTF8, "application/json");
-
-// PATCH and return an object T
-AuthorDto result = await client.PatchAndDeserializeAsync("/authors/1", content);
-
-// PATCH and ensure response contains a substring
-string result = client.PatchAndEnsureSubstringAsync("/authors/1", content, "OMG!");
-
-// PATCH and assert a 302 is returned
-var client = _factory.CreateClient(new WebApplicationFactoryClientOptions() { AllowAutoRedirect = false });
-await client.PatchAndEnsureRedirectAsync("/oldone", content, "/newone");
-
-// PATCH and assert a 400 is returned
-await client.PatchAndEnsureBadRequestAsync("/authors/1", "banana");
-
-// PATCH and assert a 401 is returned
-await client.PatchAndEnsureUnauthorizedAsync("/authors/1", content);
-
-// PATCH and assert a 403 is returned
-await client.PatchAndEnsureForbiddenAsync("/authors/1", content);
-
-// PATCH and assert a 404 is returned
-await client.PatchAndEnsureNotFoundAsync("/wrongendpoint", content)
+// PUT and assert a 405 is returned
+await client.PutAndEnsureMethodNotAllowedAsync("/wrongendpoint", content)
 ```
 
 #### [DELETE](src\MartiX.HttpClientTestExtensions\HttpClientDeleteExtensionMethods.cs)
@@ -227,9 +204,12 @@ await client.DeleteAndEnsureForbiddenAsync("/authors/1");
 
 // DELETE and assert a 404 is returned
 await client.DeleteAndEnsureNotFoundAsync("/wrongendpoint");
+
+// DELETE and assert a 405 is returned
+await client.DeleteAndEnsureMethodNotAllowedAsync("/wrongendpoint", content)
 ```
 
-### [HttpResponseMessage](src/MartiX.HttpClientTestExtensions/HttpResponseMessageExtensionMethods.cs)
+### [HttpResponseMessage](src\MartiX.HttpClientTestExtensions\HttpResponseMessageExtensionMethods.cs)
 
 All of these methods are extensions on `HttpResponseMessage`.
 
@@ -252,6 +232,9 @@ response.EnsureForbidden();
 // Assert a response has a status code of 404
 response.EnsureNotFound();
 
+// Assert a response has a status code of 405
+response.EnsureMethodNotAllowed();
+
 // Assert a response has a given status code
 response.Ensure(HttpStatusCode.Created);
 
@@ -259,7 +242,7 @@ response.Ensure(HttpStatusCode.Created);
 response.EnsureContainsAsync("OMG!", _testOutputHelper);
 ```
 
-### [StringContentHelpers](src/MartiX.HttpClientTestExtensions/StringContentHelpers.cs)
+### [StringContentHelpers](src\MartiX.HttpClientTestExtensions\StringContentHelpers.cs)
 
 Extensions on `HttpContent` which you'll typically want to return a `StringContent` type as you serialize your DTO to JSON.
 
@@ -282,4 +265,3 @@ AuthorDto result = await client.PostAndDeserializeAsync("/authors",
 - For now this is coupled with xUnit but if there is interest it could be split so the ITestOutputHelper dependency is removed/optional/swappable
 - Additional helpers for other verbs are planned
 - This is using System.Text.Json with default camelCase options that I've found most useful in my projects. This could be made extensible somehow as well.
-- When making updates to this file make sure to also update the docs/README file that is embedded in the NuGet package
